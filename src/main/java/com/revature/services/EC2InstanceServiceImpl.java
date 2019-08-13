@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import software.amazon.awssdk.services.ec2.Ec2Client;
@@ -39,11 +40,11 @@ import software.amazon.awssdk.services.ec2.model.Tag;
 @Component
 public class EC2InstanceServiceImpl implements EC2InstanceService {
 	
-	private String ec2TagName = "Revature project 2"; // This need to change (property file maybe)
-	private String amiId = "ami-02f706d959cedf892"; // This need to change (property file maybe)
-	private String securityGroupName = "revature"; // This need to change (property file maybe)
-	private String keyName = "revatureRPM"; // This need to change (property file maybe)
-	private String vpcId = "vpc-0913f361"; // This need to change (property file maybe)
+	private String ec2TagName; // Tag for EC2 instances
+	private String amiId; // Machine image for this EC2
+	private String securityGroupName; // Security group name
+	private String keyName; // Key name to secure the EC2 and generate the .PEM file
+	private String vpcId; // VPC id for this EC2
 	
 	private Ec2Client ec2Client; // EC2 client
 
@@ -52,26 +53,30 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 		this.ec2Client = ec2Client;
 	}
 	
+	@Value("${aws.config.ec2-tag-name}")
 	public void setEc2TagName(String ec2TagName) {
 		this.ec2TagName = ec2TagName;
 	}
 
+	@Value("${aws.config.ec2-ami-id}")
 	public void setAmiId(String amiId) {
 		this.amiId = amiId;
 	}
 
+	@Value("${aws.config.ec2-group-name}")
 	public void setSecurityGroupName(String securityGroupName) {
 		this.securityGroupName = securityGroupName;
 	}
 
+	@Value("${aws.config.ec2-key-name}")
 	public void setKeyName(String keyName) {
 		this.keyName = keyName;
 	}
 
+	@Value("${aws.config.ec2-vpc-id}")
 	public void setVpcId(String vpcId) {
 		this.vpcId = vpcId;
 	}
-
 
 	@Override
 	public String spinUpEC2Instance(String bashScript) throws UnsupportedEncodingException {
@@ -107,6 +112,10 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 		return instanceId;
 	}
 
+	/**
+	 * Add a tag to the EC2 instance.
+	 * @param instanceId Instance id.
+	 */
 	private void addTagToInstance(String instanceId) {
 		Tag tag = Tag.builder().key("Name").value(ec2TagName).build();
 
@@ -122,6 +131,10 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 		}
 	}
 
+	/**
+	 * Create key-pair object to secure our EC2 and generate .PEM file when
+	 * connecting using SSH
+	 */
 	private void createKeyPairRequest() {
 		CreateKeyPairRequest createKeyPairRequest =  CreateKeyPairRequest.builder()
 				.keyName(keyName).build();
@@ -135,13 +148,17 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 				out.print(createKeyPairResponse.keyMaterial());
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
-				System.out.println("Exception when saving the file.");
+				e1.printStackTrace();
 			}
 		} catch (Exception e) {
 			System.out.println("Pair response already exist.");
 		}
 	}
 
+	/**
+	 * Established access rules for this EC2. Allowing everything to connect using port 80, 22
+	 * and 5432 
+	 */
 	private void createEC2AccessRules() {
 		// Creating rules to access the ec2 instance from outside
 		IpRange ip_range = IpRange.builder()
@@ -182,6 +199,9 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 		}
 	}
 
+	/**
+	 * Creating security group for this EC2
+	 */
 	private void createSecurityGroupRequest() {
 		CreateSecurityGroupRequest createSecurityGroupRequest = CreateSecurityGroupRequest.builder()
 				.groupName(securityGroupName)
@@ -197,6 +217,11 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 		}
 	}
 
+	/**
+	 * Get the new public DNS to for the EC2 instance.
+	 * 
+	 * @param instaceId EC2 instance id
+	 */
 	@Override
 	public String getEC2InstancePublicDNS(String instaceId) {
 		

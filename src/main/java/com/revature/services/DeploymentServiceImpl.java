@@ -18,10 +18,10 @@ import com.revature.utils.FileHelper;
 @Component
 public class DeploymentServiceImpl implements DeploymentService {
 
-	private EC2InstanceService ec2InstanceService;
-	private DockerfileService dockerFileService;
-	private S3FileStorageService s3FileStorageService;
-	private BashScriptService bashScriptService;
+	private EC2InstanceService ec2InstanceService; // EC2 instance service
+	private DockerfileService dockerFileService; // Dockerfile service
+	private S3FileStorageService s3FileStorageService; // S3 file storage service
+	private BashScriptService bashScriptService; // Bash script service
 
 	@Autowired
 	public void setEc2InstanceService(EC2InstanceService ec2InstanceService) {
@@ -62,35 +62,49 @@ public class DeploymentServiceImpl implements DeploymentService {
 	@Override
 	public String deployProject(Deployment deployment) {
 		
-		File dbDockefile = null;
-		File appDockerfile = null;
+		File dbDockefile = null; // Dockerfile for database
+		File appDockerfile = null; // Dockerfile for application server
 
 		try {
+			// Convert a Multipart file into a regular Java file
 			File sqlScriptFile = FileHelper.convert(deployment.getSqlScript());
+			
+			// Store sql script file in S3 bucket
 			String sqlSctiptUrl = s3FileStorageService.storeFile(sqlScriptFile);
 			
 			sqlScriptFile.delete(); // Delete sql file after store it in the S3 bucket
 
+			// Generate Dockerfile for database
 			dbDockefile = dockerFileService.generatePostgreSQLDockerfile(deployment.getProjectId(), sqlSctiptUrl);
 			
-			appDockerfile = dockerFileService.generateTomcatServerDockerfile(deployment.getProjectId(),
+			// Generate Dockerfile for web application server
+			appDockerfile = dockerFileService.generateTomcatServerDockerfile(
+					deployment.getProjectId(),
 					deployment.getGitHubUrl(),
 					deployment.getPomLocation(),
 					deployment.getConnVariables(),
 					deployment.getEnvironmentVariables());
+			
 		} catch (IOException e) {
 			// TODO Handle the exception
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		
+		// Store database and application Docker files in the S3 bucket
 		String dbDockerfileUrl = s3FileStorageService.storeFile(dbDockefile);
 		String appDockerfileUrl = s3FileStorageService.storeFile(appDockerfile);
 		
+		// Delete Docker files
+		dbDockefile.delete();
+		appDockerfile.delete();
+		
+		// Generate bash script for the EC2 to install and run docker
 		String bashScript = bashScriptService.generateBashScript(dbDockerfileUrl, appDockerfileUrl);
 		
 		String ec2InstanceId = null;
 		
 		try {
+			// Spin up a new EC2 instance with the required
 			ec2InstanceId = ec2InstanceService.spinUpEC2Instance(bashScript);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Handle the exception

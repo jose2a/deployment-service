@@ -1,10 +1,16 @@
 package com.revature.models;
 
+/**
+ * Variables used to establish the connection with the database in the docker container.
+ * 
+ * @author Java, JUN 19 - USF
+ *
+ */
 public class ConnectionVariables {
 
-	private String urlVariableName;
-	private String usernameVariableName;
-	private String passwordVariableName;
+	private String urlVariableName; // Environment variable for the database URL
+	private String usernameVariableName; // Environment variable for the username
+	private String passwordVariableName; // Environment variable for the password
 
 	public ConnectionVariables() {
 		super();

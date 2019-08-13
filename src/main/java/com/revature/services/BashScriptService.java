@@ -3,7 +3,7 @@ package com.revature.services;
 /**
  * Service to generate Bash script that is going to be run in the new ec2 instance.
  * 
- * @author Java bash, Jun 19 - USF
+ * @author Java, JUN 19 - USF
  *
  */
 public interface BashScriptService {

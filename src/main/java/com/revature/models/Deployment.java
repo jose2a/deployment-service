@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Stores all the information needed for deploy a Java application in an EC2 instance.
+ * 
+ * @author Java, JUN 19 - USF
+ *
+ */
 public class Deployment {
 
 	private String projectId; // id of project to be deployed
@@ -15,8 +21,8 @@ public class Deployment {
 
 	private MultipartFile sqlScript; // Sql script
 
-	private ConnectionVariables connVariables;
-	private List<EnvironmentVariable> environmentVariables;
+	private ConnectionVariables connVariables; // Environment variables for the connection
+	private List<EnvironmentVariable> environmentVariables; // Other environment variables
 
 	public Deployment() {
 		super();

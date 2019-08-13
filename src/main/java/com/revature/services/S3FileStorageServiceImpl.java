@@ -11,14 +11,20 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+/**
+ * Service to store files in an S3 bucket.
+ * 
+ * @author Java, JUN 19 - USF
+ *
+ */
 @Component
 public class S3FileStorageServiceImpl implements S3FileStorageService {
 
-	private String bucketName;
+	private String bucketName; // S3 bucket name
 	
-	private String awsRegion;
+	private String awsRegion; // AWS region
 	
-	private String s3EndPoint;
+	private String s3EndPoint; // S3 end point URL
 
 	private S3Client s3Client; // S3 client
 
@@ -42,6 +48,10 @@ public class S3FileStorageServiceImpl implements S3FileStorageService {
 		this.s3EndPoint = s3EndPoint;
 	}
 
+	/**
+	 * Code based from: 
+	 * http://jamesabrannan.com/2019/04/19/amazons-aws-s3-java-api-2-0-using-spring-boot-as-client/
+	 */
 	@Override
 	public String storeFile(File file) {
 		
@@ -53,6 +63,7 @@ public class S3FileStorageServiceImpl implements S3FileStorageService {
 
 		s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
 
+		// Generate file URL in the S3 bucket
 		return "https://" + bucketName + ".s3." + awsRegion + "."+ s3EndPoint + "/" + file.getName();
 	}
 
