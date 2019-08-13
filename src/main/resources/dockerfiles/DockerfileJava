@@ -1,0 +1,42 @@
+FROM openjdk:8-jdk-alpine3.7 AS builder
+
+WORKDIR /app
+
+RUN apk add curl
+
+ENV GITHUB_URL %gitHubUrl%
+ENV POM_LOCATION /app%pomLocation% 
+
+ENV MAVEN_VERSION 3.3.9
+
+RUN mkdir -p /usr/share/maven \
+  && curl -fsSL http://apache.osuosl.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
+    | tar -xzC /usr/share/maven --strip-components=1 \
+  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+
+ENV MAVEN_HOME /usr/share/maven
+VOLUME /root/.m2
+
+RUN apk add git
+
+RUN git clone $GITHUB_URL
+
+WORKDIR $POM_LOCATION
+RUN mvn package
+
+RUN find $POM_LOCATION/target -name "*.war" -exec cp {} $POM_LOCATION/target/project2.war \;
+
+FROM tomcat:8.5.43
+
+ENV POM_LOCATION /app%pomLocation%
+ENV %db_url% jdbc:postgresql://localhost:5432/docker
+ENV %db_username% docker
+ENV %db_password% docker
+
+%enviromentVariables%
+
+EXPOSE 8080
+
+COPY --from=builder $POM_LOCATION/target/project2.war /usr/local/tomcat/webapps/
+
+CMD ["catalina.sh", "run"]
