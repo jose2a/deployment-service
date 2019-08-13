@@ -48,6 +48,10 @@ public class S3FileStorageServiceImpl implements S3FileStorageService {
 		this.s3EndPoint = s3EndPoint;
 	}
 
+	/**
+	 * Code based from: 
+	 * http://jamesabrannan.com/2019/04/19/amazons-aws-s3-java-api-2-0-using-spring-boot-as-client/
+	 */
 	@Override
 	public String storeFile(File file) {
 		
