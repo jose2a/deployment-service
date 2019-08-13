@@ -1,5 +1,7 @@
 package com.revature.services;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Service to spin up, and other operations in EC2 instances in which
  * the projects are going to be deployed.
@@ -15,8 +17,9 @@ public interface EC2InstanceService {
 	 *  
 	 * @param bashScript Bash script that is going to be run.
 	 * @return Instance-id of the newly EC2 instance (Need to be stored by the Project service). 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public String spinUpEC2Instance(String bashScript);
+	public String spinUpEC2Instance(String bashScript) throws UnsupportedEncodingException;
 	
 	/**
 	 * Get EC2 instance DNS (url) in which the project will be running.

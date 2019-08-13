@@ -12,23 +12,37 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 public class S3FileStorageServiceImpl implements S3FileStorageService {
 
-	@Value("${aws.config.bucket-name}")
 	private String bucketName;
 	
-	@Value("${aws.config.s3-endpoint}")
+	private String awsRegion;
+	
 	private String s3EndPoint;
 
 	private S3Client s3Client; // S3 client
-	
-	private final String s3Url = "https://" + bucketName + "." + s3EndPoint + "/";
 
 	@Autowired
 	public void setS3Client(S3Client s3Client) {
 		this.s3Client = s3Client;
 	}
 
+	@Value("${aws.config.bucket-name}")
+	public void setBucketName(String bucketName) {
+		this.bucketName = bucketName;
+	}
+	
+	@Value("${aws.config.region}")
+	public void setAwsRegion(String awsRegion) {
+		this.awsRegion = awsRegion;
+	}
+
+	@Value("${aws.config.s3-endpoint}")
+	public void setS3EndPoint(String s3EndPoint) {
+		this.s3EndPoint = s3EndPoint;
+	}
+
 	@Override
 	public String storeFile(File file) {
+		
 		PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 				.bucket(bucketName)
 				.key(file.getName())
@@ -37,7 +51,7 @@ public class S3FileStorageServiceImpl implements S3FileStorageService {
 
 		s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
 
-		return s3Url + file.getName();
+		return "https://" + bucketName + ".s3." + awsRegion + "."+ s3EndPoint + "/" + file.getName();
 	}
 
 }

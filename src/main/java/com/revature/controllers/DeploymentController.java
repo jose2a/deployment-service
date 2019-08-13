@@ -33,6 +33,7 @@ public class DeploymentController {
 	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String deployProject(
 			@RequestParam("projectId") Integer projectId,
+			@RequestParam("warfileName") String warfileName,
 			@RequestParam("gitHubUrl") String gitHubUrl,
 			@RequestParam("pomLocation") String pomLocation,
 			@RequestParam("sqlScript") MultipartFile sqlScript,
