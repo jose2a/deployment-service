@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.revature.models.ConnectionVariables;
+import com.revature.models.Deployment;
 import com.revature.models.EnvironmentVariable;
 import com.revature.services.DeploymentService;
 
@@ -32,16 +33,24 @@ public class DeploymentController {
 	 */
 	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String deployProject(
-			@RequestParam("projectId") Integer projectId,
-			@RequestParam("warfileName") String warfileName,
+			@RequestParam("projectId") String projectId,
 			@RequestParam("gitHubUrl") String gitHubUrl,
 			@RequestParam("pomLocation") String pomLocation,
 			@RequestParam("sqlScript") MultipartFile sqlScript,
 			@RequestParam("connVariables") ConnectionVariables connVariables,
 			@RequestParam("environmentVariables")  List<EnvironmentVariable> environmentVariables
 			) {
-		// TODO: Implement this
-		return "";
+		
+		Deployment deployment = new Deployment(
+				projectId,
+				gitHubUrl,
+				pomLocation,
+				sqlScript,
+				connVariables,
+				environmentVariables
+				);
+		
+		return deploymentService.deployProject(deployment);
 	}
 	
 	/**
@@ -65,8 +74,7 @@ public class DeploymentController {
 	 * @return Public DNS URL.
 	 */
 	@GetMapping(value = "/dns/{instanceId}", produces = MediaType.TEXT_PLAIN_VALUE)
-	public String getPublicEC2Dns(@PathVariable("instanceId") Integer instanceId) {
-		// TODO: Implement this
-		return "";
+	public String getPublicEC2Dns(@PathVariable("instanceId") String instanceId) {
+		return deploymentService.getEC2ProjectPublicDns(instanceId);
 	}
 }

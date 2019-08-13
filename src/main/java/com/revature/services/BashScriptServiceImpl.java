@@ -1,5 +1,8 @@
 package com.revature.services;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class BashScriptServiceImpl implements BashScriptService {
 	
 	private String bashScript = 
@@ -19,8 +22,8 @@ public class BashScriptServiceImpl implements BashScriptService {
 
 	@Override
 	public String generateBashScript(String dbDockerfileUrl, String appDockerfileUrl) {
-		bashScript = bashScript.replaceAll("dbDockerfileUrl", dbDockerfileUrl);
-		bashScript = bashScript.replaceAll("appDockerfileUrl", appDockerfileUrl);
+		bashScript = bashScript.replaceAll("%dbDockerfileUrl%", dbDockerfileUrl);
+		bashScript = bashScript.replaceAll("%appDockerfileUrl%", appDockerfileUrl);
 		
 		return bashScript;
 	}

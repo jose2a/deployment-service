@@ -6,10 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.revature.models.ConnectionVariables;
 import com.revature.models.EnvironmentVariable;
 import com.revature.utils.FileHelper;
 
+@Component
 public class DockerfileServiceImpl implements DockerfileService {
 	
 	private final String DOCKER_FILE_DIR = "dockerfiles/";
