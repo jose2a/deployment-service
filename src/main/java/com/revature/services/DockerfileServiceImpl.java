@@ -31,7 +31,7 @@ public class DockerfileServiceImpl implements DockerfileService {
 		dockerfileContent = dockerfileContent.replaceAll("%pomLocation%", pomLocation);
 		dockerfileContent = dockerfileContent.replaceAll("%db_url%", conVar.getUrlVariableName());
 		dockerfileContent = dockerfileContent.replaceAll("%db_username%", conVar.getUsernameVariableName());
-		dockerfileContent = dockerfileContent.replaceAll("%db_password%", conVar.getPasswordVaraibleName());
+		dockerfileContent = dockerfileContent.replaceAll("%db_password%", conVar.getPasswordVariableName());
 		
 		String envVarStr = "";
 		

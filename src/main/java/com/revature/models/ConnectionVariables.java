@@ -4,7 +4,7 @@ public class ConnectionVariables {
 
 	private String urlVariableName;
 	private String usernameVariableName;
-	private String passwordVaraibleName;
+	private String passwordVariableName;
 
 	public ConnectionVariables() {
 		super();
@@ -15,7 +15,7 @@ public class ConnectionVariables {
 		super();
 		this.urlVariableName = urlVariableName;
 		this.usernameVariableName = usernameVariableName;
-		this.passwordVaraibleName = passwordVaraibleName;
+		this.passwordVariableName = passwordVaraibleName;
 	}
 
 	public String getUrlVariableName() {
@@ -34,19 +34,19 @@ public class ConnectionVariables {
 		this.usernameVariableName = usernameVariableName;
 	}
 
-	public String getPasswordVaraibleName() {
-		return passwordVaraibleName;
+	public String getPasswordVariableName() {
+		return passwordVariableName;
 	}
 
-	public void setPasswordVaraibleName(String passwordVaraibleName) {
-		this.passwordVaraibleName = passwordVaraibleName;
+	public void setPasswordVariableName(String passwordVariableName) {
+		this.passwordVariableName = passwordVariableName;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((passwordVaraibleName == null) ? 0 : passwordVaraibleName.hashCode());
+		result = prime * result + ((passwordVariableName == null) ? 0 : passwordVariableName.hashCode());
 		result = prime * result + ((urlVariableName == null) ? 0 : urlVariableName.hashCode());
 		result = prime * result + ((usernameVariableName == null) ? 0 : usernameVariableName.hashCode());
 		return result;
@@ -61,10 +61,10 @@ public class ConnectionVariables {
 		if (getClass() != obj.getClass())
 			return false;
 		ConnectionVariables other = (ConnectionVariables) obj;
-		if (passwordVaraibleName == null) {
-			if (other.passwordVaraibleName != null)
+		if (passwordVariableName == null) {
+			if (other.passwordVariableName != null)
 				return false;
-		} else if (!passwordVaraibleName.equals(other.passwordVaraibleName))
+		} else if (!passwordVariableName.equals(other.passwordVariableName))
 			return false;
 		if (urlVariableName == null) {
 			if (other.urlVariableName != null)
@@ -82,7 +82,7 @@ public class ConnectionVariables {
 	@Override
 	public String toString() {
 		return "ConnectionVariables [urlVariableName=" + urlVariableName + ", usernameVariableName="
-				+ usernameVariableName + ", passwordVaraibleName=" + passwordVaraibleName + "]";
+				+ usernameVariableName + ", passwordVariableName=" + passwordVariableName + "]";
 	}
 
 }
