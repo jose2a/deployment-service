@@ -10,7 +10,6 @@ public class BashScriptServiceImpl implements BashScriptService {
 			+ "sudo yum update -y\n"
 			+ "sudo yum install -y docker\n"
 			+ "sudo service docker start\n"
-			+ "sudo yum install -y git\n"
 			+ "sudo yum install -y curl\n"
 			+ "cd /tmp\n"
 			+ "sudo curl %dbDockerfileUrl% --output DockerfileDb\n"

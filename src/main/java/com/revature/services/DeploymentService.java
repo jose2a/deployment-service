@@ -4,6 +4,11 @@ import java.io.IOException;
 
 import com.revature.models.Deployment;
 
+/**
+ * Takes care of all the necessary process to deploy a project in an EC2 instance.
+ * @author Java, JUN 19 - USF
+ *
+ */
 public interface DeploymentService {
 
 	/**

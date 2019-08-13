@@ -11,7 +11,7 @@ public class FileHelper {
 	
 	/**
 	 * Get content from a text file.
-	 * @param fileName File name in the url.
+	 * @param fileName File name in the URL.
 	 * @return File content
 	 */
 	public static String getTextFileContent(String fileName) {
