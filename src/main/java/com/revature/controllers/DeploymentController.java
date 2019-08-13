@@ -24,6 +24,7 @@ import com.revature.services.DeploymentService;
 
 /**
  * Rest controller for the deployment service
+ *
  * @author Java, JUN 19 - USF
  *
  */
@@ -65,6 +66,7 @@ public class DeploymentController {
 					value = mapper.readValue(text, ConnectionVariables.class);
 				} catch (IOException e) {
 					// TODO: Handle error
+					e.printStackTrace();
 				}
 	        }
 	    });
@@ -82,12 +84,12 @@ public class DeploymentController {
 
 	        @Override
 	        public void setAsText(String text) throws IllegalArgumentException {
-	        	if (text == null) {
-	        		value = null;
-	        	}
 	            try {
 					value = mapper.readValue(text, EnvironmentVariable.class);
-				} catch (IOException e) {}
+				} catch (IOException e) {
+					// TODO Handle exception
+					e.printStackTrace();
+				}
 	        }
 	    });
 	}

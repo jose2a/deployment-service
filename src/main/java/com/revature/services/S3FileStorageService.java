@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * Service to store files in an S3 bucket.
  * 
- * @author Java bash, Jun 19 - USF
+ * @author Java, JUN 19 - USF
  *
  */
 public interface S3FileStorageService {

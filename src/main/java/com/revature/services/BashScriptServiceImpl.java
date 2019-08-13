@@ -2,9 +2,16 @@ package com.revature.services;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Service to generate Bash script that is going to be run in the new ec2 instance.
+ * 
+ * @author Java, JUN 19 - USF
+ *
+ */
 @Component
 public class BashScriptServiceImpl implements BashScriptService {
 	
+	// Script to be run in the EC2 when creating it
 	private String bashScript = 
 			"#!/bin/bash\n"
 			+ "sudo yum update -y\n"

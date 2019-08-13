@@ -7,6 +7,12 @@ import java.util.Scanner;
 
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * File utilities.
+ * 
+ * @author Java, JUN 19 - USF
+ *
+ */
 public class FileHelper {
 	
 	/**

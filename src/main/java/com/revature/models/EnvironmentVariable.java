@@ -1,5 +1,11 @@
 package com.revature.models;
 
+/**
+ * Stores other environment variables needed to run the application.
+ * 
+ * @author Java, JUN 19 - USF
+ *
+ */
 public class EnvironmentVariable {
 
 	private String variableName;
