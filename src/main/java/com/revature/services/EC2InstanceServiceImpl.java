@@ -26,6 +26,16 @@ import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Tag;
 
+/**
+ * This service is going to be responsible for spinning up an EC2 instance based on the
+ * given configuration.
+ * 
+ * The code was based on the examples from the official AWS SDK documentation.
+ * https://github.com/awsdocs/aws-doc-sdk-examples
+ * 
+ * @author Java, JUN 19 - USF
+ *
+ */
 @Component
 public class EC2InstanceServiceImpl implements EC2InstanceService {
 	
