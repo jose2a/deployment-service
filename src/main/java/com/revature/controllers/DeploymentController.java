@@ -38,7 +38,7 @@ public class DeploymentController {
 			@RequestParam("pomLocation") String pomLocation,
 			@RequestParam("sqlScript") MultipartFile sqlScript,
 			@RequestParam("connVariables") ConnectionVariables connVariables,
-			@RequestParam("environmentVariables")  List<EnvironmentVariable> environmentVariables
+			@RequestParam("envVariables")  List<EnvironmentVariable> envVariables
 			) {
 		
 		Deployment deployment = new Deployment(
@@ -47,7 +47,7 @@ public class DeploymentController {
 				pomLocation,
 				sqlScript,
 				connVariables,
-				environmentVariables
+				envVariables
 				);
 		
 		return deploymentService.deployProject(deployment);
