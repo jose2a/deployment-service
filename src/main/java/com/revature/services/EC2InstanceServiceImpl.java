@@ -21,13 +21,13 @@ import software.amazon.awssdk.services.ec2.model.Tag;
 
 public class EC2InstanceServiceImpl implements EC2InstanceService {
 	
-	private String ec2TagName = "Revature project 2";
-	private String amiId = "ami-02f706d959cedf892";
-	private String securityGroupName = "revature";
-	private String keyName = "revatureRPM";
-	private String vpcId = "vpc-0913f361";
+	private String ec2TagName = "Revature project 2"; // This need to change (property file maybe)
+	private String amiId = "ami-02f706d959cedf892"; // This need to change (property file maybe)
+	private String securityGroupName = "revature"; // This need to change (property file maybe)
+	private String keyName = "revatureRPM"; // This need to change (property file maybe)
+	private String vpcId = "vpc-0913f361"; // This need to change (property file maybe)
 	
-	private Ec2Client ec2Client;
+	private Ec2Client ec2Client; // EC2 client
 
 	@Override
 	public String spinUpEC2Instance(String bashScript) throws UnsupportedEncodingException {
@@ -54,8 +54,10 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 		// Run instance
 		RunInstancesResponse runInstanceResponse = ec2Client.runInstances(runInstanceRequest);
 
+		// Getting the newly instance id
 		String instanceId = runInstanceResponse.instances().get(0).instanceId();
 
+		// Add tag to the instance
 		addTagToInstance(instanceId);
 
 		return instanceId;
