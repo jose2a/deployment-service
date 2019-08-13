@@ -23,7 +23,7 @@ public interface DockerfileService {
 	 * @param environmentVariables Other environment variables needed for this app to run
 	 * @return In memory Dockerfile for application server
 	 */
-	public File generateDockerfile(String projectId, String gitHubUrl, String pomLocation,
+	public File generateTomcatServerDockerfile(String projectId, String gitHubUrl, String pomLocation,
 			ConnectionVariables connectionVariables, List<EnvironmentVariable> environmentVariables);
 	
 	/**
@@ -32,6 +32,6 @@ public interface DockerfileService {
 	 * @param sqlScriptUrl Url of the sql file in the S3 bucket
 	 * @return In memory Dockerfile for database server
 	 */
-	public File generateDockerfile(String projectId, String sqlScriptUrl);
+	public File generatePostgreSQLDockerfile(String projectId, String sqlScriptUrl);
 
 }
