@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ import com.revature.services.DeploymentService;
  *
  */
 @RestController
+@RequestMapping("/deployment")
 public class DeploymentController {
 	
 	private DeploymentService deploymentService;
@@ -47,7 +49,7 @@ public class DeploymentController {
 	 * @param envVariables Other environment variables needed for the project to run
 	 * @return EC2 instance id
 	 */
-	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String deployProject(
 			@RequestParam("projectId") String projectId,
 			@RequestParam("gitHubUrl") String gitHubUrl,
