@@ -1,21 +1,20 @@
 package com.revature.controllers;
 
-import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.models.ConnectionVariables;
 import com.revature.models.Deployment;
@@ -29,6 +28,7 @@ import com.revature.services.DeploymentService;
  *
  */
 @RestController
+@RequestMapping("/deployment")
 public class DeploymentController {
 	
 	private DeploymentService deploymentService;
@@ -36,62 +36,6 @@ public class DeploymentController {
 	@Autowired
 	public void setDeploymentService(DeploymentService deploymentService) {
 		this.deploymentService = deploymentService;
-	}
-	
-	/**
-	 * This method parse the values passed to the controller along with the SQL script file. Because
-	 * spring does not parse the values received through in the form of a class we need to register
-	 * a custom editor.
-	 * 
-	 * Based on: https://stackoverflow.com/questions/20622359/automatic-conversion-of-json-form-parameter-in-spring-mvc-4-0
-	 * @param dataBinder
-	 */
-	@InitBinder
-	public void initBinder(WebDataBinder dataBinder) {
-		ObjectMapper mapper = new ObjectMapper();
-		
-		// Editor for ConnectionVariables
-	    dataBinder.registerCustomEditor(ConnectionVariables.class, new PropertyEditorSupport() {
-	    	
-	        Object value;
-	        
-	        @Override
-	        public Object getValue() {
-	            return value;
-	        }
-
-	        @Override
-	        public void setAsText(String text) throws IllegalArgumentException {
-	            try {
-					value = mapper.readValue(text, ConnectionVariables.class);
-				} catch (IOException e) {
-					// TODO: Handle error
-					e.printStackTrace();
-				}
-	        }
-	    });
-	    
-	    
-	    // Editor for EnvironmentVariable
-	    dataBinder.registerCustomEditor(EnvironmentVariable.class, new PropertyEditorSupport() {
-	    	
-	        Object value;
-	        
-	        @Override
-	        public Object getValue() {
-	            return value;
-	        }
-
-	        @Override
-	        public void setAsText(String text) throws IllegalArgumentException {
-	            try {
-					value = mapper.readValue(text, EnvironmentVariable.class);
-				} catch (IOException e) {
-					// TODO Handle exception
-					e.printStackTrace();
-				}
-	        }
-	    });
 	}
 
 	/**
@@ -105,19 +49,36 @@ public class DeploymentController {
 	 * @param envVariables Other environment variables needed for the project to run
 	 * @return EC2 instance id
 	 */
-	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String deployProject(
 			@RequestParam("projectId") String projectId,
 			@RequestParam("gitHubUrl") String gitHubUrl,
 			@RequestParam("pomLocation") String pomLocation,
 			@RequestParam("sqlScript") MultipartFile sqlScript,
-			@RequestParam("connVariables") ConnectionVariables connVariables,
-			@RequestParam("envVariables")  List<EnvironmentVariable> envVariables
+			@RequestParam("connVariables") String connVariables,
+			@RequestParam("envVariables")  String envVariables
 			) {
 		
-		// Validating environment variables for null values
-		if (envVariables == null || envVariables.size() == 0 || envVariables.contains(null)) {
-			envVariables = new ArrayList<EnvironmentVariable>();
+		ObjectMapper mapper = new ObjectMapper();
+		
+		ConnectionVariables connectionVariables = null;
+		List<EnvironmentVariable> environmentVariables = null;
+		
+		try {
+			// Parsing java objects using ObjectMapper
+			// Spring is not able to parse the parameters into Java objects when receiving
+			// files. It is easier to get this parameters as String and parse them afterwards
+			// https://stackoverflow.com/questions/6349421/how-to-use-jackson-to-deserialise-an-array-of-objects#6349488
+			connectionVariables = mapper.readValue(connVariables, ConnectionVariables.class);
+			environmentVariables = mapper.readValue(envVariables, new TypeReference<List<EnvironmentVariable>>(){});
+		} catch (IOException e) {
+			// TODO Handle exception
+			e.printStackTrace();
+		}
+		
+		// Validating environment variables for null values, this way we avoid an Exception
+		if (environmentVariables == null) {
+			environmentVariables = new ArrayList<EnvironmentVariable>();
 		}
 		
 		// Creating deployment instance in order to start the process
@@ -126,8 +87,8 @@ public class DeploymentController {
 				gitHubUrl,
 				pomLocation,
 				sqlScript,
-				connVariables,
-				envVariables
+				connectionVariables,
+				environmentVariables
 				);
 		
 		// Deploying the project

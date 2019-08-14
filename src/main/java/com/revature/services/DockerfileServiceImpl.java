@@ -21,6 +21,8 @@ import com.revature.utils.FileHelper;
 @Component
 public class DockerfileServiceImpl implements DockerfileService {
 	
+	private final String DOCKERFILE_POSTGRES = "DockerfilePostgres";
+	private final String DOCKERFILE_TOMCAT = "DockerfileTomcat";
 	private final String DOCKER_FILE_DIR = "dockerfiles/";
 
 	/**
@@ -36,7 +38,7 @@ public class DockerfileServiceImpl implements DockerfileService {
 		
 		// Loading the Dockerfile, it has placeholder values (denoted by %%) that will be 
 		// replaced with the specific values for this project
-		String dockerfileContent = FileHelper.getTextFileContent(DOCKER_FILE_DIR + "DockerfileJava");
+		String dockerfileContent = FileHelper.getTextFileContent(DOCKER_FILE_DIR + DOCKERFILE_TOMCAT);
 		
 		// Replace placeholder values
 		dockerfileContent = dockerfileContent.replaceAll("%gitHubUrl%", gitHubUrl + ".git");
@@ -54,7 +56,7 @@ public class DockerfileServiceImpl implements DockerfileService {
 		dockerfileContent = dockerfileContent.replaceAll("%enviromentVariables%", envVarStr);
 		
 		// Create a new file and write the Dockerfile in this
-		File dockerfile = new File("DockerfileJava-" + projectId);
+		File dockerfile = new File(DOCKERFILE_TOMCAT + "-" + projectId);
 		dockerfile.deleteOnExit();
 		
 		BufferedWriter out = new BufferedWriter(new FileWriter(dockerfile));
@@ -68,12 +70,12 @@ public class DockerfileServiceImpl implements DockerfileService {
 	public File generatePostgreSQLDockerfile(String projectId, String sqlScriptUrl) throws IOException {
 		// Loading the Dockerfile, it has placeholder values (denoted by %%) that will be 
 		// replaced with the specific values for this project
-		String dockerfileContent = FileHelper.getTextFileContent(DOCKER_FILE_DIR + "DockerfilePG");
+		String dockerfileContent = FileHelper.getTextFileContent(DOCKER_FILE_DIR + DOCKERFILE_POSTGRES);
 		
 		dockerfileContent = dockerfileContent.replaceAll("%sqlScriptUrl%", sqlScriptUrl);
 		
 		// Create a new file and write the Dockerfile in this
-		File dockerfile = new File("DockerfilePG-" + projectId);
+		File dockerfile = new File(DOCKERFILE_POSTGRES + "-" + projectId);
 		dockerfile.deleteOnExit();
 		
 		BufferedWriter out = new BufferedWriter(new FileWriter(dockerfile));
