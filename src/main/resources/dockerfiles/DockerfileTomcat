@@ -29,7 +29,7 @@ RUN find $POM_LOCATION/target -name "*.war" -exec cp {} $POM_LOCATION/target/pro
 FROM tomcat:8.5.43
 
 ENV POM_LOCATION /app%pomLocation%
-ENV %db_url% jdbc:postgresql://localhost:5432/docker
+ENV %db_url% jdbc:postgresql://db:5432/docker
 ENV %db_username% docker
 ENV %db_password% docker
 

@@ -147,10 +147,12 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 				// Saving the .pem file in case we need to login the system using ssh 
 				out.print(createKeyPairResponse.keyMaterial());
 			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
+				// TODO Handle file exception
 				e1.printStackTrace();
 			}
 		} catch (Exception e) {
+			// We just catch this exception because the key pair already exist
+			// we do not need to do anything
 			System.out.println("Pair response already exist.");
 		}
 	}
@@ -194,7 +196,8 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 			// Creating rule for the ec2 instance
 			ec2Client.authorizeSecurityGroupIngress(authSecGroupInRequest);
 		} catch (Exception e) {
-			// TODO: handle exception
+			// We just catch this exception because the rules already exist
+			// we do not need to do anything
 			System.out.println("Rule already exist.");
 		}
 	}
@@ -213,6 +216,8 @@ public class EC2InstanceServiceImpl implements EC2InstanceService {
 			// Creating Security Group
 			ec2Client.createSecurityGroup(createSecurityGroupRequest);
 		} catch (Exception e) {
+			// We just catch this exception because the security group already exist
+			// we do not need to do anything
 			System.out.println("Security group already exist.");
 		}
 	}
