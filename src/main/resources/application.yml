@@ -1,0 +1,20 @@
+server:
+  port: 9999
+  
+spring:  
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 6MB
+      enabled: true
+
+aws:
+  config:
+    s3-endpoint: amazonaws.com
+    bucket-name: revature-jose-test-bucket
+    region: ${AWS_REGION}
+    ec2-tag-name: Revature project 3
+    ec2-ami-id: ami-02f706d959cedf892
+    ec2-group-name: revature
+    ec2-key-name: revatureRPM
+    ec2-vpc-id: vpc-0913f361
