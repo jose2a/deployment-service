@@ -11,7 +11,9 @@ import com.revature.models.Deployment;
 import com.revature.utils.FileHelper;
 
 /**
- * Takes care of all the necessary process to deploy a project in an EC2 instance.
+ * Takes care of all the necessary process to deploy a project in an EC2
+ * instance.
+ * 
  * @author Java, JUN 19 - USF
  *
  */
@@ -22,6 +24,9 @@ public class DeploymentServiceImpl implements DeploymentService {
 	private DockerfileService dockerFileService; // Dockerfile service
 	private S3FileStorageService s3FileStorageService; // S3 file storage service
 	private BashScriptService bashScriptService; // Bash script service
+
+	// %s will be replaced by the public DNS we got from amazon
+	private final String PROJECT_URL_DNS_FORMAT = "http://%s/project2";
 
 	@Autowired
 	public void setEc2InstanceService(EC2InstanceService ec2InstanceService) {
@@ -48,35 +53,35 @@ public class DeploymentServiceImpl implements DeploymentService {
 	 * 
 	 * Steps:
 	 * 
-	 * 1. Save SQL script to an S3 bucket.
-	 * 2. Create Dockerfile for a database instance.
-	 * 3. Create Dockerfile for an application server instance.
-	 * 4. Store database Dockerfile in the S3 bucket to make it accessible to the EC2.
-	 * 5. Store application Dockerfile in the S3 bucket to make it accessible to the EC2.
-	 * 6. Generate bash script that will be run when we spin up the EC2 instance.
-	 * 7. Spin up a new EC2.
+	 * 1. Save SQL script to an S3 bucket. 2. Create Dockerfile for a database
+	 * instance. 3. Create Dockerfile for an application server instance. 4. Store
+	 * database Dockerfile in the S3 bucket to make it accessible to the EC2. 5.
+	 * Store application Dockerfile in the S3 bucket to make it accessible to the
+	 * EC2. 6. Generate bash script that will be run when we spin up the EC2
+	 * instance. 7. Spin up a new EC2.
 	 * 
-	 * @param deployment Contains all the information necessary to deploy the project.
+	 * @param deployment Contains all the information necessary to deploy the
+	 *                   project.
 	 * @return EC2 instance id
 	 */
 	@Override
 	public String deployProject(Deployment deployment) {
-		
+
 		File dbDockefile = null; // Dockerfile for database
 		File appDockerfile = null; // Dockerfile for application server
 
 		try {
 			// Convert a Multipart file into a regular Java file
 			File sqlScriptFile = FileHelper.convert(deployment.getSqlScript());
-			
+
 			// Store sql script file in S3 bucket
 			String sqlSctiptUrl = s3FileStorageService.storeFile(sqlScriptFile);
-			
+
 			sqlScriptFile.delete(); // Delete sql file after store it in the S3 bucket
 
 			// Generate Dockerfile for database
 			dbDockefile = dockerFileService.generatePostgreSQLDockerfile(deployment.getProjectId(), sqlSctiptUrl);
-			
+
 			// Generate Dockerfile for web application server
 			appDockerfile = dockerFileService.generateTomcatServerDockerfile(
 					deployment.getProjectId(),
@@ -84,25 +89,25 @@ public class DeploymentServiceImpl implements DeploymentService {
 					deployment.getPomLocation(),
 					deployment.getConnVariables(),
 					deployment.getEnvironmentVariables());
-			
+
 		} catch (IOException e) {
 			// TODO Handle the exception
 			e.printStackTrace();
 		}
-		
+
 		// Store database and application Docker files in the S3 bucket
 		String dbDockerfileUrl = s3FileStorageService.storeFile(dbDockefile);
 		String appDockerfileUrl = s3FileStorageService.storeFile(appDockerfile);
-		
+
 		// Delete Docker files
 		dbDockefile.delete();
 		appDockerfile.delete();
-		
+
 		// Generate bash script for the EC2 to install and run docker
 		String bashScript = bashScriptService.generateBashScript(dbDockerfileUrl, appDockerfileUrl);
-		
+
 		String ec2InstanceId = null;
-		
+
 		try {
 			// Spin up a new EC2 instance with the required
 			ec2InstanceId = ec2InstanceService.spinUpEC2Instance(bashScript);
@@ -110,7 +115,7 @@ public class DeploymentServiceImpl implements DeploymentService {
 			// TODO Handle the exception
 			e.printStackTrace();
 		}
-		
+
 		return ec2InstanceId;
 	}
 
@@ -121,8 +126,14 @@ public class DeploymentServiceImpl implements DeploymentService {
 	 */
 	@Override
 	public String getEC2ProjectPublicDns(String ec2InstanceId) {
+
+		String publicDns = ec2InstanceService.getEC2InstancePublicDNS(ec2InstanceId);
 		
-		return ec2InstanceService.getEC2InstancePublicDNS(ec2InstanceId);
+		if (publicDns == null || publicDns.isEmpty() || publicDns.equals("")) {
+			return null;
+		}
+		
+		return String.format(PROJECT_URL_DNS_FORMAT, publicDns);
 	}
 
 }
