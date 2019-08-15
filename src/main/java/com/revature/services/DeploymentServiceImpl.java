@@ -83,8 +83,11 @@ public class DeploymentServiceImpl implements DeploymentService {
 			dbDockefile = dockerFileService.generatePostgreSQLDockerfile(deployment.getProjectId(), sqlSctiptUrl);
 
 			// Generate Dockerfile for web application server
-			appDockerfile = dockerFileService.generateTomcatServerDockerfile(deployment.getProjectId(),
-					deployment.getGitHubUrl(), deployment.getPomLocation(), deployment.getConnVariables(),
+			appDockerfile = dockerFileService.generateTomcatServerDockerfile(
+					deployment.getProjectId(),
+					deployment.getGitHubUrl(),
+					deployment.getPomLocation(),
+					deployment.getConnVariables(),
 					deployment.getEnvironmentVariables());
 
 		} catch (IOException e) {
@@ -124,8 +127,13 @@ public class DeploymentServiceImpl implements DeploymentService {
 	@Override
 	public String getEC2ProjectPublicDns(String ec2InstanceId) {
 
-		return String.format(PROJECT_URL_DNS_FORMAT,
-				ec2InstanceService.getEC2InstancePublicDNS(ec2InstanceId));
+		String publicDns = ec2InstanceService.getEC2InstancePublicDNS(ec2InstanceId);
+		
+		if (publicDns == null || publicDns.isEmpty() || publicDns.equals("")) {
+			return null;
+		}
+		
+		return String.format(PROJECT_URL_DNS_FORMAT, publicDns);
 	}
 
 }

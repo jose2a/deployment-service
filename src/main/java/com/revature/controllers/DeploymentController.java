@@ -120,6 +120,7 @@ public class DeploymentController {
 	 */
 	@GetMapping(value = "/dns/{instanceId}", produces = MediaType.TEXT_PLAIN_VALUE)
 	public String getPublicEC2Dns(@PathVariable("instanceId") String instanceId) {
+		// TODO If the EC2 doesn't exist, we need to return a 404 status
 		return deploymentService.getEC2ProjectPublicDns(instanceId);
 	}
 }
